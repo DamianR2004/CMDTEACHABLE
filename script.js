@@ -1,3 +1,18 @@
+// Put this before your main script logic
+document.addEventListener("click", unlockAudio, { once: true });
+
+function unlockAudio() {
+  // Create a silent sound to unlock audio context
+  Object.values(sounds).forEach(sound => {
+    sound.play().then(() => {
+      sound.pause();
+      sound.currentTime = 0;
+    }).catch(() => {});
+  });
+
+  console.log("🔓 Audio unlocked for mobile!");
+}
+
 (async () => {
   const URL = "my_model/";
 

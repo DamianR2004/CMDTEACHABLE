@@ -1,22 +1,94 @@
-.gesture-target {
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: black;
+  overflow: hidden;
+  width: 100dvw;
+  height: 100dvh;
+}
+
+#webcam-container {
+  display: none ;
+}
+
+.eyes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+  width: 100dvw;
+  height: 100dvh;
+}
+
+.eye {
+  position: relative;
+  width: 50dvw;
+  height: 50dvh;
+  background-color: white;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.ball {
   width: 150px;
   height: 150px;
-  margin: 20px auto;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  background: url("my_images/background.png") no-repeat center/cover;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 60px solid black;
+  background-color: #FF4002;
+  animation: movingeyes 20s infinite ease;
 }
 
-.active-duimpie {
-  transform: scale(1.2);
-  box-shadow: 0 0 20px limegreen;
+.active-open .eye { background-color: green; }
+.active-open .ball { animation: openEyes 8s infinite ease; }
+
+.active-close .ball { animation: closeEyes 3s forwards ease-in-out; }
+
+.active-open .eye { background-color: white; animation: openEyes1 5s forwards ease; }
+.active-close .eye { background-color: white; animation: closeEyes1 5s forwards ease; }
+
+
+.gesture-target.active-class-8 .ball {
+  border: none;         
+  border-radius: 0;    
+  background: none;
+  animation: class8Eyes 2s infinite ease;
+  background-image: url('my_images/heart.svg'); 
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
-.active-class-2 {
-  transform: rotate(15deg) scale(1.1);
-  box-shadow: 0 0 20px gold;
+
+@keyframes openEyes {
+  0% { top: 50%; left: 50%; background-color: #FFD020; }
+  50% { top: 60%; left: 60%; background-color: #FFD020; }
+  100% { top: 50%; left: 50%; background-color: #FFD020; }
 }
 
-.active-class-3 {
-  transform: scale(1.3) rotate(-10deg);
-  box-shadow: 0 0 20px dodgerblue;
+@keyframes closeEyes {
+  0% { top: 50%; left: 50%; background-color: #a8bed1;opacity: 1; }
+  50% { top: 50%; left: 50%; background-color: #a8bed1; opacity: 0.5;}
+  100% { top: 50%; left: 50%; background-color: #a8bed1; opacity: 0; }
+}
+
+@keyframes openEyes1 {
+  0% { height: 10dvh; width: 40dvw; border-radius: 0%; }
+  100% { height: 50dvh; border-radius: 50%; }
+}
+
+@keyframes closeEyes1 {
+  0% { height: 50dvh; border-radius: 50%; }
+  100% { height: 10dvh; width: 40dvw; border-radius: 0%; }
+}
+
+@keyframes class8Eyes {
+  0% { scale: 1; }
+  50% { scale: 1.2; }
+  100% { scale: 1; }
 }

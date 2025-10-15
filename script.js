@@ -1,11 +1,12 @@
 (async () => {
   const URL = "my_model/";
 
-  const sounds = {
-    "Duimpie": new Audio("my_sounds/mars.mp3"),
-    "Class 2": new Audio("my_sounds/snickers.mp3"),
-    "Class 3": new Audio("my_sounds/milkyway.mp3"),
-  };
+const sounds = {
+  "Open": new Audio("my_sounds/loto.mp3"),
+  "Close": new Audio("my_sounds/medi.mp3"),
+  "Class 8": new Audio("my_sounds/party.mp3"),
+  "Idle": null 
+};
 
   const targetElement = document.querySelector(".gesture-target");
   const webcamContainer = document.getElementById("webcam-container");
@@ -55,63 +56,58 @@
     window.requestAnimationFrame(loop);
   }
 
-  async function predict() {
-    const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
-    const prediction = await model.predict(posenetOutput);
+async function predict() {
+  const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
+  const prediction = await model.predict(posenetOutput);
 
-    // Get the highest probability class
-    let top = prediction.reduce((a, b) => a.probability > b.probability ? a : b);
+  let top = prediction.reduce((a, b) => a.probability > b.probability ? a : b);
+  const className = top.className;
+  const prob = top.probability;
 
-    if (top.probability > 0.9) {
-      const now = Date.now();
-      const className = top.className;
-      predictionText.innerText = `Detected: ${className}`;
+  // treat low-confidence as Idle
+  const effectiveClass = prob < 0.9 ? "Idle" : className;
 
-      // Only trigger if new gesture and cooldown passed
-      if (className !== lastPrediction && now - lastSoundTime > cooldown) {
-        triggerAnimation(className);
-        lastPrediction = className;
-        lastSoundTime = now;
-      }
-    }
+  predictionText.innerText = `Detected: ${effectiveClass}`;
+
+  if (effectiveClass !== "Idle" && effectiveClass !== lastPrediction && Date.now() - lastSoundTime > cooldown) {
+    triggerAnimation(effectiveClass);
+    lastPrediction = effectiveClass;
+    lastSoundTime = Date.now();
   }
 
-  function triggerAnimation(className) {
-    if (!targetElement) return;
-
-    // sanitize class name for CSS
-    const safeName = className.toLowerCase().replace(/[^a-z0-9_-]/g, "-");
-
-    // remove previous classes
-    targetElement.classList.remove(
-      "active-duimpie",
-      "active-class-2",
-      "active-class-3"
-    );
-    targetElement.classList.add(`active-${safeName}`);
-    console.log(`✨ Animation triggered: ${safeName}`);
-
-    // play sound
-    const sound = sounds[className];
-    if (sound) {
-      sound.currentTime = 0;
-      sound.play();
-    }
+  if (effectiveClass === "Idle") {
+    lastPrediction = "Idle"; // keeps last animation frozen
   }
+}
+
+
+function triggerAnimation(className) {
+  if (!targetElement) return;
+
+  // convert className to safe format for CSS
+  const safeName = className.toLowerCase().replace(/[^a-z0-9_-]/g, "-");
+
+  // remove previous gesture classes
+  targetElement.classList.remove(
+    "active-open",
+    "active-close",
+    "active-class-8"
+  );
+
+  // add new gesture class
+  targetElement.classList.add(`active-${safeName}`);
+
+  // play sound if exists
+  const sound = sounds[className];
+  if (sound) {
+    sound.currentTime = 0;
+    sound.play();
+  }
+}
 
   function drawPose() {
     if (webcam.canvas) {
       ctx.drawImage(webcam.canvas, 0, 0);
-
-      // Optional: draw keypoints and skeleton for debugging
-      // Comment out for better mobile performance
-      /*
-      const pose = model.estimatePose(webcam.canvas);
-      if (pose) {
-        tmPose.drawKeypoints(pose.keypoints, 0.5, ctx);
-        tmPose.drawSkeleton(pose.keypoints, 0.5, ctx);
-      }
-      */
     }
   }
 
